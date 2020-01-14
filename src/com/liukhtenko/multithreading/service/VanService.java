@@ -14,6 +14,6 @@ LogisticBase logisticBase = LogisticBase.getInstance();
     @Override
     public void run() {
         logisticBase.startServiceVan(van);
-        logisticBase.finishServiceVan1(van);
+        logisticBase.finishServiceVan(van);
     }
 }

@@ -56,8 +56,8 @@ public class Van {
     public String toString() { // FIXME: 14.01.2020
         return "Van{" +
                 "name='" + name + '\'' +
-//                ", isLoaded=" + isLoaded +
-//                ", isPerishableGoods=" + isPerishableGoods +
+                ", isLoaded=" + isLoaded +
+                ", isPerishableGoods=" + isPerishableGoods +
                 '}';
     }
 }

@@ -14,7 +14,7 @@ public class LogisticBase {
     private final static int NUMBER_OF_TERMINALS = 2;
     private static LogisticBase instance;
     private static Lock lock = new ReentrantLock(true);
-    Condition condition = lock.newCondition();
+    private Condition condition = lock.newCondition();
 
     private LogisticBase() {
         freeTerminal = new ArrayDeque<>(NUMBER_OF_TERMINALS);
@@ -25,7 +25,7 @@ public class LogisticBase {
         }
     }
 
-    public static LogisticBase getInstance() { // FIXME: 14.01.2020 rename
+    public static LogisticBase getInstance() {
         if (instance == null) {
             lock.lock();
             if (instance == null) {
@@ -39,35 +39,18 @@ public class LogisticBase {
         return instance;
     }
 
-    //    public void receptionVan(Van van) {  //rename
-//        try {
-//            System.out.println("Start "+van+" service:");
-//            lock.lock();
-//            freeTerminal.remove();
-//            while (freeTerminal.size() <= 0) {
-//                condition.await();
-//                System.out.println(van+"WAIT!!!");
-//            }
-//            condition.signal();
-//            System.out.println("Service "+van+" is finish");
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        } finally {
-//            lock.unlock();
-//        }
-//    }
     public void startServiceVan(Van van) {
         try {
-            System.out.println(van + " in tunnel <--");
+            System.out.println(van + " in tunnel <--");  // FIXME: 14.01.2020 
             lock.lock();
-            Terminal terminal = null;
             while (freeTerminal.size() <= 0) {
                 System.out.println(van + " awaiting...");
                 condition.await();
             }
-            terminal = freeTerminal.poll();
+            Terminal terminal = freeTerminal.poll();
             busyTerminal.offer(terminal);
             System.out.println(van + " begin to service");
+            loadUnloadVan(van);
             TimeUnit.MILLISECONDS.sleep(1000);
             System.out.println(van + " finished servicing -->");
         } catch (InterruptedException e) {
@@ -77,11 +60,10 @@ public class LogisticBase {
         }
     }
 
-    public void finishServiceVan1(Van van) {
+    public void finishServiceVan(Van van) {
         try {
             lock.lock();
-            Terminal terminal = null;
-            terminal = busyTerminal.poll();
+            Terminal terminal = busyTerminal.poll();
             freeTerminal.offer(terminal);
             condition.signal();
         } finally {
@@ -89,23 +71,11 @@ public class LogisticBase {
         }
     }
 
-    public void finishVan(Van van) {  //rename
-        try {
-            lock.lock();
-            Terminal terminal = null;
-            TimeUnit.MILLISECONDS.sleep(2);//загрузка
-
-            // van is going away
-            terminal = busyTerminal.poll();
-            freeTerminal.offer(terminal);
-
-            condition.signal();
-
-            System.out.println(van + " Отдал Мониторы");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
+    private void loadUnloadVan(Van van) {
+        if (van.isLoaded()) {
+            van.setLoaded(false);
+        } else {
+            van.setLoaded(true);
         }
     }
 }

@@ -11,16 +11,16 @@ import java.util.concurrent.TimeUnit;
 public class LogisticBaseMain {
     public static void main(String[] args) {
         LogisticBase logisticBase = LogisticBase.getInstance();
-        Van van1 = new Van("v1", false, false);
-        Van van2 = new Van("v2", false, false);
+        Van van1 = new Van("v1", true, false);
+        Van van2 = new Van("v2", false, true);
         Van van3 = new Van("v3", false, false);
         Van van4 = new Van("v4", false, false);
-        Van van5 = new Van("v5", false, false);
+        Van van5 = new Van("v5", true, true);
         Van van6 = new Van("v6", false, false);
-        Van van7 = new Van("v7", false, false);
-        Van van8 = new Van("v8", false, false);
+        Van van7 = new Van("v7", true, true);
+        Van van8 = new Van("v8", false, true);
         Van van9 = new Van("v9", false, false);
-        Van van10 = new Van("v10", false, false);
+        Van van10 = new Van("v10", false, true);
         List<Van> vans = new ArrayList<>();
         vans.add(van1);
         vans.add(van2);
@@ -34,15 +34,10 @@ public class LogisticBaseMain {
         vans.add(van10);
         for (Van van : vans) {
             VanService vanService = new VanService(van);
+            if (van.isPerishableGoods()){
+                vanService.setPriority(Thread.MAX_PRIORITY);
+            }
             vanService.start();
-//            new Thread(()->logisticBase.startVan(van)).start();
-//            try {
-//                TimeUnit.MILLISECONDS.sleep(0);
-//                System.out.println(van+" is service");
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            logisticBase.finishVan(van);
         }
     }
 }
