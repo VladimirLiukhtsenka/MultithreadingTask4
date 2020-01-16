@@ -1,24 +1,34 @@
 package com.liukhtenko.multithreading.entity;
 
-import java.util.Objects;
-
-public class Van {
-    private String name; // FIXME: 14.01.2020
+public class Van extends Thread {
+    private String vanName;  // FIXME: 16.01.2020 т.к. у thread есть get.name
     private boolean isLoaded;
     private boolean isPerishableGoods;
+    private LogisticBase logisticBase = LogisticBase.getInstance();
+
+    public Van() {
+    }
 
     public Van(String name, boolean isLoaded, boolean isPerishableGoods) {
-        this.name = name;
+        this.vanName = name;
         this.isLoaded = isLoaded;
         this.isPerishableGoods = isPerishableGoods;
+       // logisticBase = LogisticBase.getInstance(); // FIXME: 16.01.2020 why?
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public void run() {
+        checkPriority(this);
+        logisticBase.startServiceVan(this);
+        logisticBase.finishServiceVan();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getVanNameName() {
+        return vanName;
+    }
+
+    public void setVanName(String name) {
+        this.vanName = name;
     }
 
     public boolean isLoaded() {
@@ -37,27 +47,48 @@ public class Van {
         isPerishableGoods = perishableGoods;
     }
 
+    private void checkPriority(Van van) {
+        if (van.isPerishableGoods()) {
+            van.setPriority(Thread.MAX_PRIORITY);
+        } else {
+            van.setPriority(Thread.MIN_PRIORITY);
+        }
+    }
+
     @Override
-    public boolean equals(Object o) {// FIXME: 14.01.2020
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Van van = (Van) o;
-        return isLoaded == van.isLoaded &&
-                isPerishableGoods == van.isPerishableGoods &&
-                Objects.equals(name, van.name);
+        if (van.isLoaded != isLoaded) {
+            return false;
+        }
+        if (van.isPerishableGoods != isPerishableGoods) {
+            return false;
+        }
+        return vanName != null ? van.equals(van.vanName) : van.vanName == null;
     }
 
     @Override
-    public int hashCode() {// FIXME: 14.01.2020
-        return Objects.hash(name, isLoaded, isPerishableGoods);
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + vanName.hashCode();
+        result = prime * result + Boolean.hashCode(isLoaded);
+        result = prime * result + Boolean.hashCode(isPerishableGoods);
+        return result;
     }
 
     @Override
-    public String toString() { // FIXME: 14.01.2020
-        return "Van{" +
-                "name='" + name + '\'' +
-                ", isLoaded=" + isLoaded +
-                ", isPerishableGoods=" + isPerishableGoods +
-                '}';
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Van{vanName='").append(vanName).append('\'');
+        sb.append(", isLoaded=").append(isLoaded);
+        sb.append(", isPerishableGoods=").append(isPerishableGoods).append('}');
+        return sb.toString();
     }
 }

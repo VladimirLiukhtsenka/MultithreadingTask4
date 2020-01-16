@@ -1,0 +1,10 @@
+v1 true false
+v2 false true
+v3 true false
+v4 false true
+v5 false true
+v6 true false
+v7 false true
+v8 true false
+v9 true false
+v10 false false

@@ -3,34 +3,38 @@ package com.liukhtenko.multithreading.entity;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class LogisticBase {
-    private Queue<Terminal> freeTerminal;
-    private Queue<Terminal> busyTerminal;
-    private final static int NUMBER_OF_TERMINALS = 2;
+    Queue<Terminal> freeTerminal; // FIXME: 16.01.2020 make private
+    Queue<Terminal> busyTerminal;
+    final static int NUMBER_OF_TERMINALS = 3;
     private static LogisticBase instance;
     private static Lock lock = new ReentrantLock(true);
-    private Condition condition = lock.newCondition();
+    static Condition condition = lock.newCondition();  // FIXME: 16.01.2020 static
+    private static AtomicBoolean isInstanceCreated = new AtomicBoolean(false);
 
     private LogisticBase() {
         freeTerminal = new ArrayDeque<>(NUMBER_OF_TERMINALS);
         busyTerminal = new ArrayDeque<>();
-        for (int i = 0; i < NUMBER_OF_TERMINALS; i++) {
+        for (int i = 1; i <= NUMBER_OF_TERMINALS; i++) {
             Terminal terminal = new Terminal(i);
             freeTerminal.offer(terminal);
         }
     }
 
     public static LogisticBase getInstance() {
-        if (instance == null) {
+        if (!isInstanceCreated.get()) {
             lock.lock();
             if (instance == null) {
                 try {
                     instance = new LogisticBase();
+                    isInstanceCreated.set(true);
                 } finally {
                     lock.unlock();
                 }
@@ -41,7 +45,7 @@ public class LogisticBase {
 
     public void startServiceVan(Van van) {
         try {
-            System.out.println(van + " in tunnel <--");  // FIXME: 14.01.2020 
+            System.out.println(van + " in tunnel <--");
             lock.lock();
             while (freeTerminal.size() <= 0) {
                 System.out.println(van + " awaiting...");
@@ -49,10 +53,10 @@ public class LogisticBase {
             }
             Terminal terminal = freeTerminal.poll();
             busyTerminal.offer(terminal);
-            System.out.println(van + " begin to service");
+            System.out.println(van + " begin to service in " + terminal);
             loadUnloadVan(van);
             TimeUnit.MILLISECONDS.sleep(1000);
-            System.out.println(van + " finished servicing -->");
+            System.out.println(van + " finished servicing -->"); // FIXME: 16.01.2020 in log
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -60,7 +64,7 @@ public class LogisticBase {
         }
     }
 
-    public void finishServiceVan(Van van) {
+    public void finishServiceVan() {
         try {
             lock.lock();
             Terminal terminal = busyTerminal.poll();

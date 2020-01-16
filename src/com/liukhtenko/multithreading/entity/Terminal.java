@@ -1,39 +1,45 @@
 package com.liukhtenko.multithreading.entity;
 
-import java.util.Objects;
 
 public class Terminal {
-private int id;
+    private int number;
 
-    public int getId() {
-        return id;
+    public int getNumber() {
+        return number;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setNumber(int id) {
+        this.number = id;
     }
 
-    public Terminal(int id) {
-        this.id = id;
+    Terminal(int number) {
+        this.number = number;
     }
 
     @Override
-    public boolean equals(Object o) { // FIXME: 14.01.2020 
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Terminal terminal = (Terminal) o;
-        return id == terminal.id;
+        return number == terminal.number;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + number;
+        return result;
     }
 
     @Override
     public String toString() {
         return "Terminal{" +
-                "id=" + id +
+                "number=" + number +
                 '}';
     }
 }
