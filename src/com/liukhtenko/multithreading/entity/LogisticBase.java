@@ -1,9 +1,11 @@
 package com.liukhtenko.multithreading.entity;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
-
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
@@ -11,12 +13,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class LogisticBase {
-    Queue<Terminal> freeTerminal; // FIXME: 16.01.2020 make private
+    static Logger logger = LogManager.getLogger();
+    Queue<Terminal> freeTerminal;
     Queue<Terminal> busyTerminal;
-    final static int NUMBER_OF_TERMINALS = 3;
+    private final static int NUMBER_OF_TERMINALS = 3;
     private static LogisticBase instance;
     private static Lock lock = new ReentrantLock(true);
-    static Condition condition = lock.newCondition();  // FIXME: 16.01.2020 static
+    private Condition condition = lock.newCondition();
     private static AtomicBoolean isInstanceCreated = new AtomicBoolean(false);
 
     private LogisticBase() {
@@ -28,7 +31,7 @@ public class LogisticBase {
         }
     }
 
-    public static LogisticBase getInstance() {
+    static LogisticBase getInstance() {
         if (!isInstanceCreated.get()) {
             lock.lock();
             if (instance == null) {
@@ -43,7 +46,7 @@ public class LogisticBase {
         return instance;
     }
 
-    public void startServiceVan(Van van) {
+    void startServiceVan(Van van) {
         try {
             System.out.println(van + " in tunnel <--");
             lock.lock();
@@ -56,15 +59,15 @@ public class LogisticBase {
             System.out.println(van + " begin to service in " + terminal);
             loadUnloadVan(van);
             TimeUnit.MILLISECONDS.sleep(1000);
-            System.out.println(van + " finished servicing -->"); // FIXME: 16.01.2020 in log
+            System.out.println(van + " finished servicing -->");
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.log(Level.ERROR, "Impossible to service " + van, e);
         } finally {
             lock.unlock();
         }
     }
 
-    public void finishServiceVan() {
+    void finishServiceVan() {
         try {
             lock.lock();
             Terminal terminal = busyTerminal.poll();

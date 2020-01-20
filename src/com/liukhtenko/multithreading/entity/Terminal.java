@@ -1,6 +1,5 @@
 package com.liukhtenko.multithreading.entity;
 
-
 public class Terminal {
     private int number;
 

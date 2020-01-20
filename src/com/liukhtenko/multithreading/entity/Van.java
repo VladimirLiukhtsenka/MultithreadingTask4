@@ -1,7 +1,7 @@
 package com.liukhtenko.multithreading.entity;
 
 public class Van extends Thread {
-    private String vanName;  // FIXME: 16.01.2020 т.к. у thread есть get.name
+    private String vanName;
     private boolean isLoaded;
     private boolean isPerishableGoods;
     private LogisticBase logisticBase = LogisticBase.getInstance();
@@ -13,7 +13,6 @@ public class Van extends Thread {
         this.vanName = name;
         this.isLoaded = isLoaded;
         this.isPerishableGoods = isPerishableGoods;
-       // logisticBase = LogisticBase.getInstance(); // FIXME: 16.01.2020 why?
     }
 
     @Override
@@ -70,7 +69,7 @@ public class Van extends Thread {
         if (van.isPerishableGoods != isPerishableGoods) {
             return false;
         }
-        return vanName != null ? van.equals(van.vanName) : van.vanName == null;
+        return vanName != null ? vanName.equals(van.vanName) : van.vanName == null;
     }
 
     @Override

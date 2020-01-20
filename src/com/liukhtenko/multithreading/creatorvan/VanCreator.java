@@ -1,6 +1,7 @@
 package com.liukhtenko.multithreading.creatorvan;
 
 import com.liukhtenko.multithreading.entity.Van;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,11 +12,11 @@ public class VanCreator {
     private final static String SPACE = "\\s";
     static Logger logger = LogManager.getLogger();
 
-    public  List<Van> create(List<String> list) {
+    public List<Van> create(List<String> list) {
         List<Van> vans = new ArrayList<>();
         for (String line : list) {
             Van van = createFromLine(line);
-          //  logger.log(Level.DEBUG, "Create new van: " + van);
+            logger.log(Level.DEBUG, "Create new van: " + van);
             vans.add(van);
         }
         return vans;
